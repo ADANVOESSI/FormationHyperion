@@ -1,271 +1,82 @@
 import 'package:flutter/material.dart';
-import 'package:pokemon/models/pokemon.dart';
-import 'package:pokemon/models/pokemon_type.dart';
-import 'package:pokemon/poke_theme.dart';
-import 'package:pokemon/repository/poke_repository.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-// class AddPokemons extends StatefulWidget {
-//   const AddPokemons({
-//     Key? key,
-//     required this.initialPokemon,
-//     required this.pokemon,
-//   }) : super(key: key);
-//
-//   final Pokemon? initialPokemon;
-//   final Pokemon pokemon;
-//
-//   @override
-//   State<AddPokemons> createState() => _AddPokemonsState();
-// }
-//
-// class _AddPokemonsState extends State<AddPokemons> {
-//   List<PokemonType>? _allPokemonTypes;
-//   late Pokemon _pokemon;
-//   late TextEditingController _nameController;
-//   late TextEditingController _imageController;
-//   bool isLightTheme = true;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     _pokemon = widget.pokemon;
-//
-//     _nameController = TextEditingController(text: _pokemon.name)..addListener(() => _pokemon.name = _nameController.text);
-//     _imageController = TextEditingController(text: _pokemon.imageUrl)..addListener(() => _pokemon.imageUrl = _imageController.text);
-//
-//     pokeRepository.fetchPokemonTypes().then((value) => setState(() => _allPokemonTypes = value));
-//   }
-//
-//   _onTypeChanged(PokemonType type, bool selected) {
-//     if (selected) {
-//       _pokemon.types.add(type);
-//     } else {
-//       _pokemon.types.remove(type);
-//     }
-//     setState(() {});
-//   }
-//
-//   void _submitForm(BuildContext context) {
-//     final String _name = _nameController.text.trim();
-//     final String _imageUrl = _imageController.text.trim();
-//
-//     if (_name.isNotEmpty && _imageUrl.isNotEmpty && _pokemon.types.isNotEmpty) {
-//       final updatedPokemon = Pokemon(
-//         id: _pokemon.id,
-//         name: _name,
-//         imageUrl: _imageUrl,
-//         types: _pokemon.types.toList(),
-//       );
-//
-//       // pokeRepository.updatePokemon(updatedPokemon).then((_) {
-//       //   Navigator.of(context).pushReplacement(
-//       //     MaterialPageRoute(
-//       //       builder: (context) => const MyHomePage(),
-//       //     ),
-//       //   );
-//       // }).catchError((error) {});
-//     } else {
-//       // Gérer le cas où les champs sont vides
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     ThemeData selectedTheme = isLightTheme ? PokeTheme.themeLight : PokeTheme.themeDark;
-//     return MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       theme: selectedTheme,
-//       home: SafeArea(
-//         child: Scaffold(
-//           appBar: AppBar(
-//             backgroundColor: Colors.transparent,
-//             elevation: 0,
-//             leading: IconButton(
-//               iconSize: 28,
-//               icon: const Icon(Icons.arrow_back),
-//               onPressed: () => Navigator.of(context).pop(),
-//             ),
-//             title: const Text(
-//               'Update Pokemons',
-//               style: TextStyle(fontSize: 22, fontFamily: 'Poppins', fontWeight: FontWeight.w500),
-//             ),
-//             actions: <Widget>[
-//               Switch(
-//                 value: isLightTheme,
-//                 onChanged: (value) {
-//                   setState(() {
-//                     isLightTheme = value;
-//                   });
-//                 },
-//                 activeTrackColor: Colors.black26,
-//                 activeColor: Colors.white,
-//               ),
-//             ],
-//           ),
-//           body: Row(
-//             children: [
-//               Flexible(
-//                 flex: 2,
-//                 child: Center(
-//                   child: SingleChildScrollView(
-//                     child: Padding(
-//                       padding: const EdgeInsets.all(100.0),
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.stretch,
-//                         children: [
-//                           TextField(
-//                             decoration: const InputDecoration(label: Text('Nom')),
-//                             controller: _nameController,
-//                           ),
-//                           TextField(
-//                             decoration: const InputDecoration(label: Text('Image')),
-//                             controller: _imageController,
-//                           ),
-//                           if (_allPokemonTypes != null) ...[
-//                             const SizedBox(height: 20),
-//                             const Text('Types'),
-//                             Wrap(
-//                               spacing: 5,
-//                               children: _allPokemonTypes!
-//                                   .map(
-//                                     (type) => PokemonTypeChip(
-//                                   type,
-//                                   initialValue: _pokemon.types.contains(type),
-//                                   onChanged: (value) => _onTypeChanged(type, value),
-//                                 ),
-//                               )
-//                                   .toList(),
-//                             ),
-//                           ],
-//                           const SizedBox(height: 20),
-//                           Row(
-//                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-//                             children: [
-//                               FilledButton.icon(
-//                                 icon: const Icon(Icons.cancel),
-//                                 onPressed: () {
-//                                   Navigator.of(context).pop();
-//                                 },
-//                                 label: const Text('Annuler'),
-//                               ),
-//                               FilledButton.icon(
-//                                 icon: const Icon(Icons.save),
-//                                 onPressed: () {
-//                                   _submitForm(context);
-//                                 },
-//                                 label: const Text('Valider'),
-//                               ),
-//                             ],
-//                           ),
-//                         ],
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ),
-//             ],
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+import '../blocs/data_types/data_cubit.dart';
+import '../blocs/theme_cubit.dart';
+import '../blocs/types_pokemons/types_pokemons_bloc.dart';
+import '../blocs/types_pokemons/types_pokemons_event.dart';
+import '../blocs/types_pokemons/types_pokemons_state.dart';
+import '../models/pokemon_type.dart';
 
-class AddPokemons extends StatefulWidget {
-  const AddPokemons({super.key});
-
-  @override
-  State<AddPokemons> createState() => _AddPokemonsState();
-}
-
-class _AddPokemonsState extends State<AddPokemons> {
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  // final pokeRepository = PokeRepository();
-  List<Pokemon> pokemon = [];
-  bool isLightTheme = true;
+class AddPokemons extends StatelessWidget {
+  AddPokemons({super.key});
 
   final List<PokemonType> _selectedTypes = [];
-  String _name = '';
-  String _imageUrl = '';
+  final String _name = '';
+  final String _imageUrl = '';
 
-  void _submitForm() {
+  void _submitForm(BuildContext context, String name, String imageUrl, List<PokemonType> selectedTypes) {
+    print("1 La méthode _submite appelée : $_name, $_imageUrl");
     if (_name.isNotEmpty && _imageUrl.isNotEmpty && _selectedTypes.isNotEmpty) {
-      pokeRepository.addPokemon(pokemon as Pokemon);
-      setState(() {
-        _name = '';
-        _imageUrl = '';
-        _selectedTypes.clear();
-      });
+      print("2 La méthode _submite appelée");
+      context.read<TypesPokemonsBloc>().add(
+            AddPokemonToDatabase(
+              name: _name,
+              imageUrl: _imageUrl,
+              types: _selectedTypes,
+            ),
+          );
     } else {}
   }
 
   @override
   Widget build(BuildContext context) {
-    final selectedTheme =
-        isLightTheme ? PokeTheme.themeLight : PokeTheme.themeDark;
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: selectedTheme,
-      home: SafeArea(
-        child: Scaffold(
-          appBar: AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0,
-            leading: IconButton(
-              iconSize: 28,
-              icon: const Icon(
-                Icons.arrow_back,
-              ),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            title: const Text(
-              'Add Pokemons',
-              style: TextStyle(
-                fontSize: 22,
-                fontFamily: 'Poppins',
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            actions: <Widget>[
-              Switch(
-                value: isLightTheme,
-                onChanged: (value) {
-                  setState(() {
-                    isLightTheme = value;
-                  });
-                },
-                activeTrackColor: Colors.black26,
-                activeColor: Colors.white,
-              ),
-            ],
+    return BlocProvider<TypesPokemonsBloc>(
+      create: (context) => TypesPokemonsBloc()..add(LoadTypesPokemons()),
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            iconSize: 28,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).pop(),
           ),
-          body: Center(
-            child: SingleChildScrollView(
-              child: PhysicalShape(
-                clipper: ShapeBorderClipper(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0),
+          title: const Text(
+            'Add Pokemons',
+            style: TextStyle(fontSize: 22, fontFamily: 'Poppins', fontWeight: FontWeight.w500),
+          ),
+          actions: <Widget>[
+            Switch(
+              value: context.watch<ThemeCubit>().state == ThemeModePokemon.light,
+              onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
+              activeTrackColor: Colors.black26,
+              activeColor: Colors.white,
+            ),
+          ],
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(100, 50, 100, 50),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Pokemon',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
-                ),
-                color: Colors.transparent,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(200, 50, 200, 50),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Pokemon',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.w600),
-                      ),
-                      Form(
-                        key: _formKey,
-                        child: Column(
+                  BlocBuilder<TypesPokemonsBloc, TypesPokemonsState>(
+                    builder: (context, state) {
+                      if (state.status == TypesPokemonsStatus.loading) {
+                        return const CircularProgressIndicator();
+                      } else if (state.status == TypesPokemonsStatus.success) {
+                        return Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
+                            const SizedBox(height: 20),
                             TextFormField(
-                              decoration:
-                                  const InputDecoration(labelText: 'Nom'),
+                              decoration: const InputDecoration(labelText: 'Nom'),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Veuillez entrer un nom';
@@ -273,15 +84,12 @@ class _AddPokemonsState extends State<AddPokemons> {
                                 return null;
                               },
                               onChanged: (value) {
-                                setState(() {
-                                  _name = value;
-                                });
+                                context.read<DataCubit>().updateName(value);
                               },
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
-                              decoration: const InputDecoration(
-                                  labelText: "URL de l'image"),
+                              decoration: const InputDecoration(labelText: "URL de l'image"),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return "Veuillez entrer une URL d'image valide";
@@ -289,73 +97,64 @@ class _AddPokemonsState extends State<AddPokemons> {
                                 return null;
                               },
                               onChanged: (value) {
-                                setState(() {
-                                  _imageUrl = value;
-                                });
+                                context.read<DataCubit>().updateImageUrl(value);
                               },
                             ),
                             const SizedBox(height: 20),
-                            FutureBuilder(
-                              future: pokeRepository.fetchPokemonTypes(),
-                              builder: (context,
-                                  AsyncSnapshot<List<PokemonType>> snapshot) {
-                                if (snapshot.connectionState ==
-                                    ConnectionState.waiting) {
-                                  return const CircularProgressIndicator();
-                                } else if (snapshot.hasError) {
-                                  return Text('Erreur: ${snapshot.error}');
-                                } else if (!snapshot.hasData) {
-                                  return const Text('Pas de données');
-                                } else {
-                                  return Wrap(
-                                    spacing: 5,
-                                    children: snapshot.data!.map((pokemonType) {
-                                      return FilterChip(
-                                        label: SizedBox(
-                                          width: 80,
-                                          child: Row(
-                                            children: [
-                                              Image.network(
-                                                pokemonType.imageUrl,
-                                                width: 20,
-                                                height: 20,
-                                              ),
-                                              Text(pokemonType.name),
-                                            ],
-                                          ),
+                            const Text("Types"),
+                            Wrap(
+                              spacing: 5,
+                              children: state.typesPokemons.map((pokemonType) {
+                                return FilterChip(
+                                  label: SizedBox(
+                                    width: 80,
+                                    child: Row(
+                                      children: [
+                                        Image.network(
+                                          pokemonType.imageUrl,
+                                          width: 20,
+                                          height: 20,
                                         ),
-                                        selected: _selectedTypes
-                                            .contains(pokemonType),
-                                        onSelected: (bool selected) {
-                                          setState(() {
-                                            if (selected) {
-                                              _selectedTypes.add(pokemonType);
-                                            } else {
-                                              _selectedTypes
-                                                  .remove(pokemonType);
-                                            }
-                                          });
-                                        },
-                                      );
-                                    }).toList(),
-                                  );
-                                }
-                              },
+                                        Text(pokemonType.name),
+                                      ],
+                                    ),
+                                  ),
+                                  selected: _selectedTypes.contains(pokemonType),
+                                  onSelected: (bool selected) {
+                                    context.read<TypesPokemonsBloc>().add(FilterChipSelected(
+                                          pokemonType: pokemonType,
+                                          isSelected: selected,
+                                        ));
+
+                                    if (selected) {
+                                      _selectedTypes.add(pokemonType);
+                                    } else {
+                                      _selectedTypes.remove(pokemonType);
+                                    }
+                                  },
+                                );
+                              }).toList(),
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-                              onPressed: _submitForm,
+                              onPressed: () {
+                                _submitForm(context, _name, _imageUrl, _selectedTypes);
+                              },
                               child: const Text(
-                                'Valider',
+                                'Ajouter',
                                 style: TextStyle(fontSize: 18),
                               ),
                             ),
                           ],
-                        ),
-                      ),
-                    ],
+                        );
+                      } else if (state.status == TypesPokemonsStatus.failure) {
+                        return const Text('Erreur lors du chargement des données !!');
+                      } else {
+                        return const SizedBox();
+                      }
+                    },
                   ),
-                ),
+                ],
               ),
             ),
           ),

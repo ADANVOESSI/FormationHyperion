@@ -20,30 +20,39 @@ class PokeRepository {
 
   Future<List<PokemonType>> fetchPokemonTypes() async {
     final pokemons = await fetchPokemons();
-    final allTypes = pokemons
-        .expand((pokemon) => pokemon.types)
-        .toList()
-        .distinctBy((type) => type.name)
-        .toList(growable: false)
-      ..sort((a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase()));
+    final allTypes = pokemons.expand((pokemon) => pokemon.types).toList().distinctBy((type) => type.name).toList(growable: false)..sort((a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase()));
     return allTypes;
   }
 
-  Future<void> addPokemon(Pokemon pokemon) async {
-    pokemon.id = (_pokemons?.length ?? 0) + 1;
-    _pokemons
-      ?..add(pokemon)
-      ..sort((first, second) =>
-          first.name.toLowerCase().compareTo(second.name.toLowerCase()));
+  Future<void> addPokemon({
+    // print("");
+    required String name,
+    required String imageUrl,
+    required List<PokemonType> types,
+  }) async {
+    try {
+      await FirebaseFirestore.instance.collection('pokemons').add({
+        'id': (_pokemons?.length ?? 0) + 1,
+        'name': name,
+        'imageUrl': imageUrl,
+        'type': types,
+      });
+    } catch (e) {
+      throw Exception('Failed to add Pokemon to the database: $e');
+    }
   }
+
+  // Future<void> addPokemon(Pokemon pokemon) async {
+  //   pokemon.id = (_pokemons?.length ?? 0) + 1;
+  //   _pokemons
+  //     ?..add(pokemon)
+  //     ..sort((first, second) => first.name.toLowerCase().compareTo(second.name.toLowerCase()));
+  // }
 
   Future<void> updatePokemon(Pokemon pokemon) async {
     print('La liste des pokemons : ${pokemon.types}');
     try {
-      await FirebaseFirestore.instance
-          .collection('pokemons')
-          .doc(pokemon.id.toString())
-          .update(pokemon.toJson());
+      await FirebaseFirestore.instance.collection('pokemons').doc(pokemon.id.toString()).update(pokemon.toJson());
     } catch (e) {
       throw Exception('Failed to update Pokemon: $e');
     }
@@ -51,10 +60,7 @@ class PokeRepository {
 
   Future<void> deletePokemon(int index) async {
     try {
-      final QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('pokemons')
-          .where('id', isEqualTo: index)
-          .get();
+      final QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('pokemons').where('id', isEqualTo: index).get();
 
       final documents = querySnapshot.docs;
 
@@ -64,14 +70,13 @@ class PokeRepository {
         print("Aucun Pokemon avec l'ID $index trouvé.");
       }
     } catch (e) {
-      throw Exception('Failed to delete Pokemon');
+      throw Exception('Failed to delete Pokemon: $e');
     }
   }
 
   Future<void> deleteAllPokemons() async {
     try {
-      final QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('pokemons').get();
+      final QuerySnapshot querySnapshot = await FirebaseFirestore.instance.collection('pokemons').get();
 
       final documents = querySnapshot.docs;
       await Future.forEach(documents, (doc) async {

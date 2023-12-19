@@ -3,23 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pokemon/blocs/pokemons/pokemons_bloc.dart';
 import 'package:pokemon/blocs/pokemons/pokemons_events.dart';
 import 'package:pokemon/blocs/pokemons/pokemons_state.dart';
+import 'package:pokemon/blocs/theme_cubit.dart';
 import 'package:pokemon/models/pokemon.dart';
-import 'package:pokemon/repository/poke_repository.dart';
 import 'package:pokemon/screens/pokemons_edit/edit_pokemons.dart';
 
+import '../../blocs/types_pokemons/types_pokemons_bloc.dart';
+import '../../blocs/types_pokemons/types_pokemons_event.dart';
 import '../../poke_routes.dart';
 import 'details_pokemons.dart';
 
 class PokemonsScreen extends StatelessWidget {
-  final PokemonsBloc pokemonsBloc;
+  PokemonsScreen({super.key});
 
-  PokemonsScreen({required this.pokemonsBloc, super.key});
-
-  List<Pokemon> pokemon = [];
-  List<Pokemon> allPokemon = [];
-  List<Pokemon> searchedPokemon = [];
-  Pokemon? selectedPokemon;
-  bool isLightTheme = true;
+  final List<Pokemon> searchedPokemon = [];
   final TextEditingController _searchController = TextEditingController();
   final bool _isSearching = false;
 
@@ -64,7 +60,7 @@ class PokemonsScreen extends StatelessWidget {
                 style: const TextStyle(),
                 // onChanged: _searchPokemon,
                 onChanged: (value) {
-                  pokemonsBloc.add(SearchPokemon(value));
+                  // pokemonsBloc.add(SearchPokemon(value));
                 },
               )
             : const Text(
@@ -110,13 +106,15 @@ class PokemonsScreen extends StatelessWidget {
             icon: const Icon(Icons.add),
             onPressed: () {
               pokeRoutes.go('/addPokemons');
+
+              Future.delayed(Duration.zero, () {
+                context.read<TypesPokemonsBloc>().add(LoadTypesPokemons());
+              });
             },
           ),
           Switch(
-            value: isLightTheme,
-            onChanged: (value) {
-              pokemonsBloc.add(ThemeChanged(value));
-            },
+            value: context.watch<ThemeCubit>().state == ThemeModePokemon.light,
+            onChanged: (_) => context.read<ThemeCubit>().toggleTheme(),
             activeTrackColor: Colors.black26,
             activeColor: Colors.white,
           ),
@@ -176,16 +174,14 @@ class PokemonsScreen extends StatelessWidget {
                                             color: Colors.white,
                                           ),
                                         ),
-                                        onDismissed: (DismissDirection direction) async {
-                                          await pokeRepository.deletePokemon(index);
+                                        onDismissed: (DismissDirection direction) {
+                                          context.read<PokemonsBloc>().add(PokemonsDeleted(index: index));
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
                                               content: const Text('Pokemon supprimé'),
                                               action: SnackBarAction(
                                                 label: 'Annuler',
-                                                onPressed: () {
-                                                  // setState(() {});
-                                                },
+                                                onPressed: () {},
                                               ),
                                             ),
                                           );
@@ -193,7 +189,6 @@ class PokemonsScreen extends StatelessWidget {
                                         child: InkWell(
                                           onTap: () {
                                             context.read<PokemonsBloc>().add(PokemonSelected(currentPokemon));
-                                            print("Le currentPokemon sélectionné est : $currentPokemon");
                                           },
                                           child: Card(
                                             color: Colors.transparent,
@@ -234,15 +229,15 @@ class PokemonsScreen extends StatelessWidget {
                                             color: Colors.white,
                                           ),
                                         ),
-                                        onDismissed: (DismissDirection direction) async {
-                                          await pokeRepository.deletePokemon(index);
+                                        onDismissed: (DismissDirection direction) {
+                                          context.read<PokemonsBloc>().add(PokemonsDeleted(index: index));
                                           ScaffoldMessenger.of(context).showSnackBar(
                                             SnackBar(
                                               content: const Text('Pokemon supprimé'),
                                               action: SnackBarAction(
                                                 label: 'Annuler',
                                                 onPressed: () {
-                                                  // setState(() {});
+                                                  // Rétablir la suppression si nécessaire
                                                 },
                                               ),
                                             ),
@@ -251,7 +246,6 @@ class PokemonsScreen extends StatelessWidget {
                                         child: InkWell(
                                           onTap: () {
                                             context.read<PokemonsBloc>().add(PokemonSelected(currentPokemon));
-                                            print("Le currentPokemon sélectionné est : $currentPokemon");
                                           },
                                           child: Card(
                                             color: Colors.transparent,
@@ -313,7 +307,7 @@ class PokemonsScreen extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _editPokemon(context, selectedPokemon),
+        onPressed: () => _editPokemon(context, context.read<PokemonsBloc>().state.selectedPokemon),
         label: const Text('Edit'),
         icon: const Icon(Icons.edit),
       ),
@@ -336,7 +330,7 @@ class PokemonsScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                pokemonsBloc.add(DeleteAllPokemons());
+                context.read<PokemonsBloc>().add(DeleteAllPokemons());
                 Navigator.of(context).pop(true);
               },
               child: const Text('OK'),

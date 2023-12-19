@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-
 import 'package:pokemon/models/pokemon.dart';
 
 sealed class PokemonsEvent extends Equatable {
@@ -9,18 +8,7 @@ sealed class PokemonsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-final class PokemonsLoadingEvent extends PokemonsEvent {}
-
 class LoadPokemons extends PokemonsEvent {}
-
-class PokemonsDeleted extends PokemonsEvent {
-  final int index;
-
-  const PokemonsDeleted({required this.index});
-
-  @override
-  List<Object> get props => [index];
-}
 
 class PokemonSelected extends PokemonsEvent {
   final Pokemon selectedPokemon;
@@ -31,16 +19,16 @@ class PokemonSelected extends PokemonsEvent {
   List<Object> get props => [selectedPokemon];
 }
 
-class DeleteAllPokemons extends PokemonsEvent {}
+class PokemonsDeleted extends PokemonsEvent {
+  final int index;
 
-class ThemeChanged extends PokemonsEvent {
-  final bool isLightTheme;
-
-  const ThemeChanged(this.isLightTheme);
+  const PokemonsDeleted({required this.index});
 
   @override
-  List<Object> get props => [isLightTheme];
+  List<Object> get props => [index];
 }
+
+class DeleteAllPokemons extends PokemonsEvent {}
 
 class SearchPokemon extends PokemonsEvent {
   final String searchText;

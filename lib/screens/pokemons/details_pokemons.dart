@@ -4,7 +4,6 @@ import 'package:pokemon/models/pokemon.dart';
 import 'package:pokemon/utils/extension/context_extension.dart';
 import 'package:pokemon/models/pokemon_type.dart';
 
-
 class DetailPokemon extends StatelessWidget {
   final Pokemon? _pokemon;
 
