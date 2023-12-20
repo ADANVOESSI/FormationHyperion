@@ -1,33 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../blocs/data_types/data_cubit.dart';
-import '../blocs/theme_cubit.dart';
-import '../blocs/types_pokemons/types_pokemons_bloc.dart';
-import '../blocs/types_pokemons/types_pokemons_event.dart';
-import '../blocs/types_pokemons/types_pokemons_state.dart';
-import '../models/pokemon_type.dart';
+import 'package:pokemon/blocs/data_types/data_cubit.dart';
+import 'package:pokemon/blocs/theme_cubit.dart';
+import 'package:pokemon/blocs/types_pokemons/types_pokemons_bloc.dart';
+import 'package:pokemon/blocs/types_pokemons/types_pokemons_event.dart';
+import 'package:pokemon/blocs/types_pokemons/types_pokemons_state.dart';
+import 'package:pokemon/models/pokemon_type.dart';
 
 class AddPokemons extends StatelessWidget {
   AddPokemons({super.key});
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final List<PokemonType> _selectedTypes = [];
+  // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _imageUrlController = TextEditingController();
 
-  void _submitForm(BuildContext context) {
-    String name = _nameController.text;
-    String imageUrl = _imageUrlController.text;
-    if (name.isNotEmpty && imageUrl.isNotEmpty && _selectedTypes.isNotEmpty) {
+  void _submitForm(BuildContext context, List<PokemonType> selectedTypes) {
+    // print("Le submit est appelé");
+    final name = _nameController.text;
+    final imageUrl = _imageUrlController.text;
+    if (name.isNotEmpty && imageUrl.isNotEmpty) {
+      // print("Le submit est appelé avec les données : $name, $imageUrl");
+
       context.read<TypesPokemonsBloc>().add(
             AddPokemon(
               name: name,
               imageUrl: imageUrl,
-              types: _selectedTypes,
+              types: selectedTypes,
             ),
           );
-    } else {}
+    } else {
+      print('Pas de données!');
+    }
   }
 
   @override
@@ -68,7 +71,6 @@ class AddPokemons extends StatelessWidget {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
                   Form(
-                    key: _formKey,
                     child: BlocBuilder<TypesPokemonsBloc, TypesPokemonsState>(
                       builder: (context, state) {
                         if (state.status == TypesPokemonsStatus.loading) {
@@ -106,7 +108,7 @@ class AddPokemons extends StatelessWidget {
                                 },
                               ),
                               const SizedBox(height: 20),
-                              const Text("Types"),
+                              const Text('Types'),
                               Wrap(
                                 spacing: 5,
                                 children: state.typesPokemons.map((pokemonType) {
@@ -124,26 +126,22 @@ class AddPokemons extends StatelessWidget {
                                         ],
                                       ),
                                     ),
-                                    selected: _selectedTypes.contains(pokemonType),
                                     onSelected: (bool selected) {
-                                      context.read<TypesPokemonsBloc>().add(FilterChipSelected(
-                                            pokemonType: pokemonType,
-                                            isSelected: selected,
-                                          ));
-
-                                      if (selected) {
-                                        _selectedTypes.add(pokemonType);
-                                      } else {
-                                        _selectedTypes.remove(pokemonType);
-                                      }
+                                      context.read<TypesPokemonsBloc>().add(
+                                            FilterChipSelected(
+                                              pokemonType: pokemonType,
+                                              isSelected: selected,
+                                            ),
+                                          );
                                     },
+                                    selected: state.selectedTypes?.contains(pokemonType) ?? false,
                                   );
                                 }).toList(),
                               ),
                               const SizedBox(height: 20),
                               ElevatedButton(
                                 onPressed: () {
-                                  _submitForm(context);
+                                  _submitForm(context, state.selectedTypes ?? []);
                                 },
                                 child: const Text(
                                   'Ajouter',
@@ -159,7 +157,7 @@ class AddPokemons extends StatelessWidget {
                         }
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

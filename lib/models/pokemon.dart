@@ -1,6 +1,6 @@
 import 'package:pokemon/models/pokemon_type.dart';
 
-class Pokemon{
+class Pokemon {
   int id;
   String name;
   String imageUrl;
@@ -13,18 +13,17 @@ class Pokemon{
     required this.types,
   });
 
-  bool isValid() => name.isNotEmpty && imageUrl.isNotEmpty && types.isNotEmpty;
-
-  factory Pokemon.fromJson(Map<String, dynamic> json,
-      {String dataSource = 'api'}) {
+  factory Pokemon.fromJson(
+    Map<String, dynamic> json, {
+    String dataSource = 'api',
+  }) {
     final jsonTypesKey = (dataSource == 'api') ? 'apiTypes' : 'types';
     final jsonTypesArray = json[jsonTypesKey] as List? ?? [];
-    final types =
-        jsonTypesArray.map((type) => PokemonType.fromJson(type)).toList();
+    final types = jsonTypesArray.map((json) => PokemonType.fromJson(json as Map<String, dynamic>)).toList();
     return Pokemon(
-      id: json['id'],
-      name: json['name'],
-      imageUrl: json['image'],
+      id: json['id'] as int,
+      name: json['name'] as String,
+      imageUrl: json['image'] as String,
       types: types,
     );
   }
@@ -42,5 +41,4 @@ class Pokemon{
   String toString() {
     return '${name.padRight(15)} | [${types.map((t) => t.name).join(',')}]';
   }
-
 }

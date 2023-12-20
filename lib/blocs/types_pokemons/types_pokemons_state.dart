@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
-
-import '../../models/pokemon_type.dart';
+import 'package:pokemon/models/pokemon_type.dart';
 
 enum TypesPokemonsStatus { initial, loading, success, failure }
 

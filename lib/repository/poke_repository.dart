@@ -36,7 +36,7 @@ class PokeRepository {
         'imageUrl': imageUrl,
         'type': types,
       });
-      print("$name, $imageUrl, $types");
+      print('$name, $imageUrl, $types');
     } catch (e) {
       throw Exception('Failed to add Pokemon to the database: $e');
     }

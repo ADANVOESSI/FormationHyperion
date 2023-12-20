@@ -32,14 +32,10 @@ class _EditPokemonsState extends State<EditPokemons> {
     super.initState();
     _pokemon = widget.pokemon;
 
-    _nameController = TextEditingController(text: _pokemon.name)
-      ..addListener(() => _pokemon.name = _nameController.text);
-    _imageController = TextEditingController(text: _pokemon.imageUrl)
-      ..addListener(() => _pokemon.imageUrl = _imageController.text);
+    _nameController = TextEditingController(text: _pokemon.name)..addListener(() => _pokemon.name = _nameController.text);
+    _imageController = TextEditingController(text: _pokemon.imageUrl)..addListener(() => _pokemon.imageUrl = _imageController.text);
 
-    pokeRepository
-        .fetchPokemonTypes()
-        .then((value) => setState(() => _allPokemonTypes = value));
+    pokeRepository.fetchPokemonTypes().then((value) => setState(() => _allPokemonTypes = value));
   }
 
   _onTypeChanged(PokemonType type, bool selected) {
@@ -56,12 +52,12 @@ class _EditPokemonsState extends State<EditPokemons> {
     final imageUrl = _imageController.text.trim();
 
     if (name.isNotEmpty && imageUrl.isNotEmpty && _pokemon.types.isNotEmpty) {
-      final updatedPokemon = Pokemon(
-        id: _pokemon.id,
-        name: name,
-        imageUrl: imageUrl,
-        types: _pokemon.types.toList(),
-      );
+      // final updatedPokemon = Pokemon(
+      //   id: _pokemon.id,
+      //   name: name,
+      //   imageUrl: imageUrl,
+      //   types: _pokemon.types.toList(),
+      // );
 
       // pokeRepository.updatePokemon(updatedPokemon).then((_) {
       //   Navigator.of(context).pushReplacement(
@@ -75,8 +71,7 @@ class _EditPokemonsState extends State<EditPokemons> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedTheme =
-        isLightTheme ? PokeTheme.themeLight : PokeTheme.themeDark;
+    final selectedTheme = isLightTheme ? PokeTheme.themeLight : PokeTheme.themeDark;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: selectedTheme,
@@ -93,9 +88,10 @@ class _EditPokemonsState extends State<EditPokemons> {
             title: const Text(
               'Update Pokemons',
               style: TextStyle(
-                  fontSize: 22,
-                  fontFamily: 'Poppins',
-                  fontWeight: FontWeight.w500),
+                fontSize: 22,
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w500,
+              ),
             ),
             actions: <Widget>[
               Switch(
@@ -129,13 +125,11 @@ class _EditPokemonsState extends State<EditPokemons> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           TextField(
-                            decoration:
-                                const InputDecoration(label: Text('Nom')),
+                            decoration: const InputDecoration(label: Text('Nom')),
                             controller: _nameController,
                           ),
                           TextField(
-                            decoration:
-                                const InputDecoration(label: Text('Image')),
+                            decoration: const InputDecoration(label: Text('Image')),
                             controller: _imageController,
                           ),
                           if (_allPokemonTypes != null) ...[
@@ -147,10 +141,8 @@ class _EditPokemonsState extends State<EditPokemons> {
                                   .map(
                                     (type) => TypePokemon(
                                       type,
-                                      initialValue:
-                                          _pokemon.types.contains(type),
-                                      onChanged: (value) =>
-                                          _onTypeChanged(type, value),
+                                      initialValue: _pokemon.types.contains(type),
+                                      onChanged: (value) => _onTypeChanged(type, value),
                                     ),
                                   )
                                   .toList(),

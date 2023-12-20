@@ -15,6 +15,7 @@ class PokemonsBloc extends Bloc<PokemonsEvent, PokemonsState> {
   Future<void> _loadPokemons(LoadPokemons event, Emitter<PokemonsState> emit) async {
     try {
       final fetchedPokemons = await pokeRepository.fetchPokemons();
+      print("Les pokemons ici : $fetchedPokemons");
       emit(
         state.copyWith(
           status: PokemonsStatus.success,
@@ -31,7 +32,7 @@ class PokemonsBloc extends Bloc<PokemonsEvent, PokemonsState> {
   //   pokeRepository.deletePokemon(event.index);
   // }
 
-  void _deletedPokemon(PokemonsDeleted event, Emitter<PokemonsState> emit) async {
+  Future<void> _deletedPokemon(PokemonsDeleted event, Emitter<PokemonsState> emit) async {
     try {
       await pokeRepository.deletePokemon(event.index);
       // emit(state.copyWith(/* ... */)); // Émettez l'état mis à jour si nécessaire
@@ -40,13 +41,15 @@ class PokemonsBloc extends Bloc<PokemonsEvent, PokemonsState> {
     }
   }
 
-  void _deleteAllPokemons(DeleteAllPokemons event, Emitter<PokemonsState> emit) async {
+  Future<void> _deleteAllPokemons(DeleteAllPokemons event, Emitter<PokemonsState> emit) async {
     try {
       await pokeRepository.deleteAllPokemons();
-      emit(state.copyWith(
-        status: PokemonsStatus.success,
-        pokemons: [],
-      ));
+      emit(
+        state.copyWith(
+          status: PokemonsStatus.success,
+          pokemons: [],
+        ),
+      );
     } catch (e) {
       print("L'erreur est $e");
     }

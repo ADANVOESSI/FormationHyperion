@@ -8,7 +8,13 @@ sealed class PokemonsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadPokemons extends PokemonsEvent {}
+class LoadPokemons extends PokemonsEvent {
+  @override
+  String toString() {
+    print('AddPokemon: Name');
+    return 'AddPokemon(name)';
+  }
+}
 
 class PokemonSelected extends PokemonsEvent {
   final Pokemon selectedPokemon;

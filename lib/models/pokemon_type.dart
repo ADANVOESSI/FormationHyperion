@@ -3,13 +3,13 @@ class PokemonType {
   final String name;
   final String imageUrl;
 
-  PokemonType({this.id, required this.name, required this.imageUrl});
+  PokemonType({required this.name, required this.imageUrl, this.id});
 
   factory PokemonType.fromJson(Map<String, dynamic> json) {
     return PokemonType(
-      id: json['id'],
-      name: json['name'],
-      imageUrl: json['image'],
+      id: json['id'] as int?,
+      name: json['name'] as String,
+      imageUrl: json['image'] as String,
     );
   }
 

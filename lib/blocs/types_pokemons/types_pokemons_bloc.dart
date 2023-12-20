@@ -1,9 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:pokemon/blocs/types_pokemons/types_pokemons_event.dart';
 import 'package:pokemon/blocs/types_pokemons/types_pokemons_state.dart';
+import 'package:pokemon/models/pokemon_type.dart';
 import 'package:pokemon/repository/poke_repository.dart';
-
-import '../../models/pokemon_type.dart';
 
 class TypesPokemonsBloc extends Bloc<TypesPokemonsEvent, TypesPokemonsState> {
   TypesPokemonsBloc() : super(const TypesPokemonsState()) {

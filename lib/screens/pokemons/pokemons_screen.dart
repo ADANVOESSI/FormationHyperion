@@ -4,13 +4,12 @@ import 'package:pokemon/blocs/pokemons/pokemons_bloc.dart';
 import 'package:pokemon/blocs/pokemons/pokemons_events.dart';
 import 'package:pokemon/blocs/pokemons/pokemons_state.dart';
 import 'package:pokemon/blocs/theme_cubit.dart';
+import 'package:pokemon/blocs/types_pokemons/types_pokemons_bloc.dart';
+import 'package:pokemon/blocs/types_pokemons/types_pokemons_event.dart';
 import 'package:pokemon/models/pokemon.dart';
+import 'package:pokemon/poke_routes.dart';
+import 'package:pokemon/screens/pokemons/details_pokemons.dart';
 import 'package:pokemon/screens/pokemons_edit/edit_pokemons.dart';
-
-import '../../blocs/types_pokemons/types_pokemons_bloc.dart';
-import '../../blocs/types_pokemons/types_pokemons_event.dart';
-import '../../poke_routes.dart';
-import 'details_pokemons.dart';
 
 class PokemonsScreen extends StatelessWidget {
   PokemonsScreen({super.key});
@@ -68,8 +67,7 @@ class PokemonsScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 22, fontFamily: 'Poppins', fontWeight: FontWeight.w500),
               ),
         actions: <Widget>[
-          _isSearching
-              ? IconButton(
+          if (_isSearching) IconButton(
                   icon: const Icon(Icons.close),
                   iconSize: 28,
                   onPressed: () {
@@ -78,8 +76,7 @@ class PokemonsScreen extends StatelessWidget {
                     //   _searchController.clear();
                     // });
                   },
-                )
-              : IconButton(
+                ) else IconButton(
                   icon: const Icon(Icons.search),
                   iconSize: 28,
                   onPressed: () {
@@ -100,7 +97,7 @@ class PokemonsScreen extends StatelessWidget {
               icon: const Icon(Icons.download),
               onPressed: () {
                 context.read<PokemonsBloc>().add(LoadPokemons());
-              }),
+              },),
           IconButton(
             iconSize: 28,
             icon: const Icon(Icons.add),
@@ -299,7 +296,7 @@ class PokemonsScreen extends StatelessWidget {
                   flex: 2,
                   child: Builder(builder: (context) {
                     return DetailPokemon(context.select((PokemonsBloc pokemonBloc) => pokemonBloc.state.selectedPokemon));
-                  }),
+                  },),
                 ),
               ],
             );
