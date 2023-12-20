@@ -1,7 +1,9 @@
+import 'dart:developer';
+
 import 'package:bloc/bloc.dart';
-import 'package:pokemon/blocs/pokemons/pokemons_events.dart';
-import 'package:pokemon/blocs/pokemons/pokemons_state.dart';
 import 'package:pokemon/repository/poke_repository.dart';
+import 'package:pokemon/views/screens/pokemons/pokemons_events.dart';
+import 'package:pokemon/views/screens/pokemons/pokemons_state.dart';
 
 class PokemonsBloc extends Bloc<PokemonsEvent, PokemonsState> {
   PokemonsBloc() : super(const PokemonsState()) {
@@ -10,12 +12,12 @@ class PokemonsBloc extends Bloc<PokemonsEvent, PokemonsState> {
     on<LoadPokemons>(_loadPokemons);
     on<DeleteAllPokemons>(_deleteAllPokemons);
     on<PokemonSelected>(_pokemonSelected);
+    on<AddPokemon>(_addPokemon);
   }
 
   Future<void> _loadPokemons(LoadPokemons event, Emitter<PokemonsState> emit) async {
     try {
       final fetchedPokemons = await pokeRepository.fetchPokemons();
-      print("Les pokemons ici : $fetchedPokemons");
       emit(
         state.copyWith(
           status: PokemonsStatus.success,
@@ -27,17 +29,12 @@ class PokemonsBloc extends Bloc<PokemonsEvent, PokemonsState> {
     }
   }
 
-  // void _deletedPokemon(PokemonsDeleted event, Emitter emit) {
-  //   final PokeRepository pokeRepository;
-  //   pokeRepository.deletePokemon(event.index);
-  // }
-
   Future<void> _deletedPokemon(PokemonsDeleted event, Emitter<PokemonsState> emit) async {
     try {
       await pokeRepository.deletePokemon(event.index);
       // emit(state.copyWith(/* ... */)); // Émettez l'état mis à jour si nécessaire
     } catch (e) {
-      print("L'erreur est $e");
+      log("L'erreur est $e");
     }
   }
 
@@ -51,7 +48,7 @@ class PokemonsBloc extends Bloc<PokemonsEvent, PokemonsState> {
         ),
       );
     } catch (e) {
-      print("L'erreur est $e");
+      log("L'erreur est $e");
     }
   }
 
@@ -69,5 +66,21 @@ class PokemonsBloc extends Bloc<PokemonsEvent, PokemonsState> {
         searchedPokemon: searchedPokemon,
       ),
     );
+  }
+
+  Future<void> _addPokemon(
+    AddPokemon event,
+    Emitter<PokemonsState> emit,
+  ) async {
+    try {
+      await pokeRepository.addPokemon(
+        name: event.name,
+        imageUrl: event.imageUrl,
+        types: event.types,
+      );
+      emit(state.copyWith());
+    } catch (e) {
+      log('Failed to load types pokemons $e', stackTrace: StackTrace.current);
+    }
   }
 }

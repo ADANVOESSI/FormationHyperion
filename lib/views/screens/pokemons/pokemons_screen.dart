@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pokemon/blocs/pokemons/pokemons_bloc.dart';
-import 'package:pokemon/blocs/pokemons/pokemons_events.dart';
-import 'package:pokemon/blocs/pokemons/pokemons_state.dart';
-import 'package:pokemon/blocs/theme_cubit.dart';
-import 'package:pokemon/blocs/types_pokemons/types_pokemons_bloc.dart';
-import 'package:pokemon/blocs/types_pokemons/types_pokemons_event.dart';
 import 'package:pokemon/models/pokemon.dart';
 import 'package:pokemon/poke_routes.dart';
-import 'package:pokemon/screens/pokemons/details_pokemons.dart';
-import 'package:pokemon/screens/pokemons_edit/edit_pokemons.dart';
+import 'package:pokemon/theme_cubit.dart';
+import 'package:pokemon/views/screens/pokemons/details_pokemons.dart';
+import 'package:pokemon/views/screens/pokemons/pokemons_bloc.dart';
+import 'package:pokemon/views/screens/pokemons/pokemons_events.dart';
+import 'package:pokemon/views/screens/pokemons/pokemons_state.dart';
+import 'package:pokemon/views/screens/pokemons_edit/edit_pokemons.dart';
+import 'package:pokemon/views/screens/pokemons_edit/types_pokemons_bloc.dart';
+import 'package:pokemon/views/screens/pokemons_edit/types_pokemons_event.dart';
 
 class PokemonsScreen extends StatelessWidget {
   PokemonsScreen({super.key});
@@ -67,24 +67,27 @@ class PokemonsScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 22, fontFamily: 'Poppins', fontWeight: FontWeight.w500),
               ),
         actions: <Widget>[
-          if (_isSearching) IconButton(
-                  icon: const Icon(Icons.close),
-                  iconSize: 28,
-                  onPressed: () {
-                    // setState(() {
-                    //   _isSearching = false;
-                    //   _searchController.clear();
-                    // });
-                  },
-                ) else IconButton(
-                  icon: const Icon(Icons.search),
-                  iconSize: 28,
-                  onPressed: () {
-                    // setState(() {
-                    //   _isSearching = true;
-                    // });
-                  },
-                ),
+          if (_isSearching)
+            IconButton(
+              icon: const Icon(Icons.close),
+              iconSize: 28,
+              onPressed: () {
+                // setState(() {
+                //   _isSearching = false;
+                //   _searchController.clear();
+                // });
+              },
+            )
+          else
+            IconButton(
+              icon: const Icon(Icons.search),
+              iconSize: 28,
+              onPressed: () {
+                // setState(() {
+                //   _isSearching = true;
+                // });
+              },
+            ),
           IconButton(
             iconSize: 28,
             icon: const Icon(Icons.delete),
@@ -93,11 +96,12 @@ class PokemonsScreen extends StatelessWidget {
             },
           ),
           IconButton(
-              iconSize: 28,
-              icon: const Icon(Icons.download),
-              onPressed: () {
-                context.read<PokemonsBloc>().add(LoadPokemons());
-              },),
+            iconSize: 28,
+            icon: const Icon(Icons.download),
+            onPressed: () {
+              context.read<PokemonsBloc>().add(LoadPokemons());
+            },
+          ),
           IconButton(
             iconSize: 28,
             icon: const Icon(Icons.add),
@@ -294,9 +298,11 @@ class PokemonsScreen extends StatelessWidget {
                 const VerticalDivider(width: 10),
                 Expanded(
                   flex: 2,
-                  child: Builder(builder: (context) {
-                    return DetailPokemon(context.select((PokemonsBloc pokemonBloc) => pokemonBloc.state.selectedPokemon));
-                  },),
+                  child: Builder(
+                    builder: (context) {
+                      return DetailPokemon(context.select((PokemonsBloc pokemonBloc) => pokemonBloc.state.selectedPokemon));
+                    },
+                  ),
                 ),
               ],
             );

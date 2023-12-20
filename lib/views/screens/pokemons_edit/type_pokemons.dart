@@ -21,7 +21,7 @@ class TypePokemon extends StatefulWidget {
 class _TypePokemonState extends State<TypePokemon> {
   bool _isSelected = false;
 
-  _onChange(bool value) {
+  void _onChange(bool value) {
     widget.onChanged(value);
     setState(() => _isSelected = value);
   }

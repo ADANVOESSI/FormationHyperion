@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:pokemon/models/pokemon.dart';
+import 'package:pokemon/models/pokemon_type.dart';
 
 sealed class PokemonsEvent extends Equatable {
   const PokemonsEvent();
@@ -8,13 +9,7 @@ sealed class PokemonsEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadPokemons extends PokemonsEvent {
-  @override
-  String toString() {
-    print('AddPokemon: Name');
-    return 'AddPokemon(name)';
-  }
-}
+class LoadPokemons extends PokemonsEvent {}
 
 class PokemonSelected extends PokemonsEvent {
   final Pokemon selectedPokemon;
@@ -23,6 +18,18 @@ class PokemonSelected extends PokemonsEvent {
 
   @override
   List<Object> get props => [selectedPokemon];
+}
+
+class AddPokemon extends PokemonsEvent {
+  final String name;
+  final String imageUrl;
+  final List<PokemonType> types;
+
+  const AddPokemon({
+    required this.name,
+    required this.imageUrl,
+    required this.types,
+  });
 }
 
 class PokemonsDeleted extends PokemonsEvent {

@@ -1,13 +1,13 @@
 {
-"appName": "Pokémons",
-"hello": "Hello {userName}",
-"@hello": {
-  "description": "A message with a single parameter",
-  "placeholders": {
-    "userName": {
-      "type": "String",
-      "example": "Bob"
+    "appName": "Pokemons",
+    "pokemonListFooter": "There is {pokemonCount} pokemons in da deck",
+    "@pokemonListFooter": {
+        "description": "nombre de pokemons",
+        "placeholders": {
+            "pokemonCount": {
+                "type": "int",
+                "example": "12"
+            }
+        }
     }
-  }
-}
 }

@@ -1,36 +1,33 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pokemon/blocs/data_types/data_cubit.dart';
-import 'package:pokemon/blocs/theme_cubit.dart';
-import 'package:pokemon/blocs/types_pokemons/types_pokemons_bloc.dart';
-import 'package:pokemon/blocs/types_pokemons/types_pokemons_event.dart';
-import 'package:pokemon/blocs/types_pokemons/types_pokemons_state.dart';
 import 'package:pokemon/models/pokemon_type.dart';
+import 'package:pokemon/theme_cubit.dart';
+import 'package:pokemon/views/screens/pokemons/pokemons_bloc.dart';
+import 'package:pokemon/views/screens/pokemons/pokemons_events.dart';
+import 'package:pokemon/views/screens/pokemons_edit/data_cubit.dart';
+import 'package:pokemon/views/screens/pokemons_edit/types_pokemons_bloc.dart';
+import 'package:pokemon/views/screens/pokemons_edit/types_pokemons_event.dart';
+import 'package:pokemon/views/screens/pokemons_edit/types_pokemons_state.dart';
 
 class AddPokemons extends StatelessWidget {
   AddPokemons({super.key});
 
-  // final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _imageUrlController = TextEditingController();
 
   void _submitForm(BuildContext context, List<PokemonType> selectedTypes) {
-    // print("Le submit est appelé");
     final name = _nameController.text;
     final imageUrl = _imageUrlController.text;
-    if (name.isNotEmpty && imageUrl.isNotEmpty) {
-      // print("Le submit est appelé avec les données : $name, $imageUrl");
-
-      context.read<TypesPokemonsBloc>().add(
+    if (name.isNotEmpty && imageUrl.isNotEmpty && selectedTypes.isNotEmpty) {
+      context.read<PokemonsBloc>().add(
             AddPokemon(
               name: name,
               imageUrl: imageUrl,
               types: selectedTypes,
             ),
           );
-    } else {
-      print('Pas de données!');
-    }
+    } else {}
   }
 
   @override
@@ -113,28 +110,17 @@ class AddPokemons extends StatelessWidget {
                                 spacing: 5,
                                 children: state.typesPokemons.map((pokemonType) {
                                   return FilterChip(
-                                    label: SizedBox(
-                                      width: 80,
-                                      child: Row(
-                                        children: [
-                                          Image.network(
-                                            pokemonType.imageUrl,
-                                            width: 20,
-                                            height: 20,
-                                          ),
-                                          Text(pokemonType.name),
-                                        ],
-                                      ),
-                                    ),
                                     onSelected: (bool selected) {
                                       context.read<TypesPokemonsBloc>().add(
-                                            FilterChipSelected(
+                                            FilterTypesSelected(
                                               pokemonType: pokemonType,
                                               isSelected: selected,
                                             ),
                                           );
                                     },
                                     selected: state.selectedTypes?.contains(pokemonType) ?? false,
+                                    label: Text(pokemonType.name),
+                                    avatar: CachedNetworkImage(imageUrl: pokemonType.imageUrl),
                                   );
                                 }).toList(),
                               ),

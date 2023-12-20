@@ -1,14 +1,13 @@
 import 'package:bloc/bloc.dart';
-import 'package:pokemon/blocs/types_pokemons/types_pokemons_event.dart';
-import 'package:pokemon/blocs/types_pokemons/types_pokemons_state.dart';
 import 'package:pokemon/models/pokemon_type.dart';
 import 'package:pokemon/repository/poke_repository.dart';
+import 'package:pokemon/views/screens/pokemons_edit/types_pokemons_event.dart';
+import 'package:pokemon/views/screens/pokemons_edit/types_pokemons_state.dart';
 
 class TypesPokemonsBloc extends Bloc<TypesPokemonsEvent, TypesPokemonsState> {
   TypesPokemonsBloc() : super(const TypesPokemonsState()) {
     on<LoadTypesPokemons>(_loadTypesPokemons);
-    on<FilterChipSelected>(_filterTypesPokemons);
-    on<AddPokemon>(_addPokemon);
+    on<FilterTypesSelected>(_filterTypesPokemons);
   }
 
   Future<void> _loadTypesPokemons(LoadTypesPokemons event, Emitter<TypesPokemonsState> emit) async {
@@ -26,11 +25,11 @@ class TypesPokemonsBloc extends Bloc<TypesPokemonsEvent, TypesPokemonsState> {
   }
 
   Future<void> _filterTypesPokemons(
-    FilterChipSelected event,
+    FilterTypesSelected event,
     Emitter<TypesPokemonsState> emit,
   ) async {
     try {
-      final updatedTypes = List<PokemonType>.from(state.typesPokemons);
+      final updatedTypes = List<PokemonType>.from(state.selectedTypes ?? []);
 
       if (event.isSelected) {
         updatedTypes.add(event.pokemonType);
@@ -44,19 +43,5 @@ class TypesPokemonsBloc extends Bloc<TypesPokemonsEvent, TypesPokemonsState> {
         ),
       );
     } catch (_) {}
-  }
-
-  Future<void> _addPokemon(
-    AddPokemon event,
-    Emitter<TypesPokemonsState> emit,
-  ) async {
-    try {
-      await pokeRepository.addPokemon(
-        name: event.name,
-        imageUrl: event.imageUrl,
-        types: event.types,
-      );
-      emit(state.copyWith());
-    } catch (e) {}
   }
 }

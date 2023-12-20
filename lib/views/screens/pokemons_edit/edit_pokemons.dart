@@ -4,7 +4,7 @@ import 'package:pokemon/models/pokemon.dart';
 import 'package:pokemon/models/pokemon_type.dart';
 import 'package:pokemon/poke_theme.dart';
 import 'package:pokemon/repository/poke_repository.dart';
-import 'package:pokemon/screens/pokemons_edit/type_pokemons.dart';
+import 'package:pokemon/views/screens/pokemons_edit/type_pokemons.dart';
 
 class EditPokemons extends StatefulWidget {
   const EditPokemons({
@@ -38,7 +38,7 @@ class _EditPokemonsState extends State<EditPokemons> {
     pokeRepository.fetchPokemonTypes().then((value) => setState(() => _allPokemonTypes = value));
   }
 
-  _onTypeChanged(PokemonType type, bool selected) {
+  void _onTypeChanged(PokemonType type, bool selected) {
     if (selected) {
       _pokemon.types.add(type);
     } else {
@@ -47,27 +47,27 @@ class _EditPokemonsState extends State<EditPokemons> {
     setState(() {});
   }
 
-  void _submitForm(BuildContext context) {
-    final name = _nameController.text.trim();
-    final imageUrl = _imageController.text.trim();
-
-    if (name.isNotEmpty && imageUrl.isNotEmpty && _pokemon.types.isNotEmpty) {
-      // final updatedPokemon = Pokemon(
-      //   id: _pokemon.id,
-      //   name: name,
-      //   imageUrl: imageUrl,
-      //   types: _pokemon.types.toList(),
-      // );
-
-      // pokeRepository.updatePokemon(updatedPokemon).then((_) {
-      //   Navigator.of(context).pushReplacement(
-      //     MaterialPageRoute(
-      //       builder: (context) => PokemonsScreen(pokemonsBloc: pokemonsBloc,),
-      //     ),
-      //   );
-      // }).catchError((error) {});
-    } else {}
-  }
+  // void _submitForm(BuildContext context) {
+  //   final name = _nameController.text.trim();
+  //   final imageUrl = _imageController.text.trim();
+  //
+  //   if (name.isNotEmpty && imageUrl.isNotEmpty && _pokemon.types.isNotEmpty) {
+  //     // final updatedPokemon = Pokemon(
+  //     //   id: _pokemon.id,
+  //     //   name: name,
+  //     //   imageUrl: imageUrl,
+  //     //   types: _pokemon.types.toList(),
+  //     // );
+  //
+  //     // pokeRepository.updatePokemon(updatedPokemon).then((_) {
+  //     //   Navigator.of(context).pushReplacement(
+  //     //     MaterialPageRoute(
+  //     //       builder: (context) => PokemonsScreen(pokemonsBloc: pokemonsBloc,),
+  //     //     ),
+  //     //   );
+  //     // }).catchError((error) {});
+  //   } else {}
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +162,7 @@ class _EditPokemonsState extends State<EditPokemons> {
                               FilledButton.icon(
                                 icon: const Icon(Icons.save),
                                 onPressed: () {
-                                  _submitForm(context);
+                                  // _submitForm(context);
                                 },
                                 label: const Text('Valider'),
                               ),

@@ -36,21 +36,12 @@ class PokeRepository {
         'imageUrl': imageUrl,
         'type': types,
       });
-      print('$name, $imageUrl, $types');
     } catch (e) {
       throw Exception('Failed to add Pokemon to the database: $e');
     }
   }
 
-  // Future<void> addPokemon(Pokemon pokemon) async {
-  //   pokemon.id = (_pokemons?.length ?? 0) + 1;
-  //   _pokemons
-  //     ?..add(pokemon)
-  //     ..sort((first, second) => first.name.toLowerCase().compareTo(second.name.toLowerCase()));
-  // }
-
   Future<void> updatePokemon(Pokemon pokemon) async {
-    print('La liste des pokemons : ${pokemon.types}');
     try {
       await FirebaseFirestore.instance.collection('pokemons').doc(pokemon.id.toString()).update(pokemon.toJson());
     } catch (e) {
@@ -66,9 +57,7 @@ class PokeRepository {
 
       if (documents.isNotEmpty) {
         await documents.first.reference.delete();
-      } else {
-        print("Aucun Pokemon avec l'ID $index trouvé.");
-      }
+      } else {}
     } catch (e) {
       throw Exception('Failed to delete Pokemon: $e');
     }
@@ -82,9 +71,8 @@ class PokeRepository {
       await Future.forEach(documents, (doc) async {
         await doc.reference.delete();
       });
-    } catch (e) {
-      print('Erreur lors de la suppression des Pokémons : $e');
-      throw Exception('Failed to delete Pokémons');
+    } catch (error, stacktrace) {
+      throw Exception('Failed to delete Pokémons\n$error\nstacktrace: $stacktrace');
     }
   }
 }
