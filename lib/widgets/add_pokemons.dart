@@ -11,18 +11,19 @@ import '../models/pokemon_type.dart';
 class AddPokemons extends StatelessWidget {
   AddPokemons({super.key});
 
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final List<PokemonType> _selectedTypes = [];
-  final String _name = '';
-  final String _imageUrl = '';
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _imageUrlController = TextEditingController();
 
-  void _submitForm(BuildContext context, String name, String imageUrl, List<PokemonType> selectedTypes) {
-    print("1 La méthode _submite appelée : $_name, $_imageUrl");
-    if (_name.isNotEmpty && _imageUrl.isNotEmpty && _selectedTypes.isNotEmpty) {
-      print("2 La méthode _submite appelée");
+  void _submitForm(BuildContext context) {
+    String name = _nameController.text;
+    String imageUrl = _imageUrlController.text;
+    if (name.isNotEmpty && imageUrl.isNotEmpty && _selectedTypes.isNotEmpty) {
       context.read<TypesPokemonsBloc>().add(
-            AddPokemonToDatabase(
-              name: _name,
-              imageUrl: _imageUrl,
+            AddPokemon(
+              name: name,
+              imageUrl: imageUrl,
               types: _selectedTypes,
             ),
           );
@@ -66,94 +67,99 @@ class AddPokemons extends StatelessWidget {
                     'Pokemon',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
                   ),
-                  BlocBuilder<TypesPokemonsBloc, TypesPokemonsState>(
-                    builder: (context, state) {
-                      if (state.status == TypesPokemonsStatus.loading) {
-                        return const CircularProgressIndicator();
-                      } else if (state.status == TypesPokemonsStatus.success) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            const SizedBox(height: 20),
-                            TextFormField(
-                              decoration: const InputDecoration(labelText: 'Nom'),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Veuillez entrer un nom';
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                context.read<DataCubit>().updateName(value);
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            TextFormField(
-                              decoration: const InputDecoration(labelText: "URL de l'image"),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return "Veuillez entrer une URL d'image valide";
-                                }
-                                return null;
-                              },
-                              onChanged: (value) {
-                                context.read<DataCubit>().updateImageUrl(value);
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            const Text("Types"),
-                            Wrap(
-                              spacing: 5,
-                              children: state.typesPokemons.map((pokemonType) {
-                                return FilterChip(
-                                  label: SizedBox(
-                                    width: 80,
-                                    child: Row(
-                                      children: [
-                                        Image.network(
-                                          pokemonType.imageUrl,
-                                          width: 20,
-                                          height: 20,
-                                        ),
-                                        Text(pokemonType.name),
-                                      ],
-                                    ),
-                                  ),
-                                  selected: _selectedTypes.contains(pokemonType),
-                                  onSelected: (bool selected) {
-                                    context.read<TypesPokemonsBloc>().add(FilterChipSelected(
-                                          pokemonType: pokemonType,
-                                          isSelected: selected,
-                                        ));
-
-                                    if (selected) {
-                                      _selectedTypes.add(pokemonType);
-                                    } else {
-                                      _selectedTypes.remove(pokemonType);
-                                    }
-                                  },
-                                );
-                              }).toList(),
-                            ),
-                            const SizedBox(height: 20),
-                            ElevatedButton(
-                              onPressed: () {
-                                _submitForm(context, _name, _imageUrl, _selectedTypes);
-                              },
-                              child: const Text(
-                                'Ajouter',
-                                style: TextStyle(fontSize: 18),
+                  Form(
+                    key: _formKey,
+                    child: BlocBuilder<TypesPokemonsBloc, TypesPokemonsState>(
+                      builder: (context, state) {
+                        if (state.status == TypesPokemonsStatus.loading) {
+                          return const CircularProgressIndicator();
+                        } else if (state.status == TypesPokemonsStatus.success) {
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              const SizedBox(height: 20),
+                              TextFormField(
+                                decoration: const InputDecoration(labelText: 'Nom'),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Veuillez entrer un nom';
+                                  }
+                                  return null;
+                                },
+                                controller: _nameController,
+                                onChanged: (value) {
+                                  context.read<DataCubit>().updateName(value);
+                                },
                               ),
-                            ),
-                          ],
-                        );
-                      } else if (state.status == TypesPokemonsStatus.failure) {
-                        return const Text('Erreur lors du chargement des données !!');
-                      } else {
-                        return const SizedBox();
-                      }
-                    },
-                  ),
+                              const SizedBox(height: 20),
+                              TextFormField(
+                                decoration: const InputDecoration(labelText: "URL de l'image"),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return "Veuillez entrer une URL d'image valide";
+                                  }
+                                  return null;
+                                },
+                                controller: _imageUrlController,
+                                onChanged: (value) {
+                                  context.read<DataCubit>().updateImageUrl(value);
+                                },
+                              ),
+                              const SizedBox(height: 20),
+                              const Text("Types"),
+                              Wrap(
+                                spacing: 5,
+                                children: state.typesPokemons.map((pokemonType) {
+                                  return FilterChip(
+                                    label: SizedBox(
+                                      width: 80,
+                                      child: Row(
+                                        children: [
+                                          Image.network(
+                                            pokemonType.imageUrl,
+                                            width: 20,
+                                            height: 20,
+                                          ),
+                                          Text(pokemonType.name),
+                                        ],
+                                      ),
+                                    ),
+                                    selected: _selectedTypes.contains(pokemonType),
+                                    onSelected: (bool selected) {
+                                      context.read<TypesPokemonsBloc>().add(FilterChipSelected(
+                                            pokemonType: pokemonType,
+                                            isSelected: selected,
+                                          ));
+
+                                      if (selected) {
+                                        _selectedTypes.add(pokemonType);
+                                      } else {
+                                        _selectedTypes.remove(pokemonType);
+                                      }
+                                    },
+                                  );
+                                }).toList(),
+                              ),
+                              const SizedBox(height: 20),
+                              ElevatedButton(
+                                onPressed: () {
+                                  _submitForm(context);
+                                },
+                                child: const Text(
+                                  'Ajouter',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else if (state.status == TypesPokemonsStatus.failure) {
+                          return const Text('Erreur lors du chargement des données !!');
+                        } else {
+                          return const SizedBox();
+                        }
+                      },
+                    ),
+                  )
                 ],
               ),
             ),

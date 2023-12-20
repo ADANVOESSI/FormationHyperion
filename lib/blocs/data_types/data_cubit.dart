@@ -1,14 +1,12 @@
 import 'package:bloc/bloc.dart';
 
-import '../../models/pokemon_type.dart';
 import 'data_types_state.dart';
 
-class DataCubit extends Cubit<ThemeDataState> {
+class DataCubit extends Cubit<DataState> {
   DataCubit()
-      : super(ThemeDataState(
+      : super(DataState(
           name: '',
           imageUrl: '',
-          types: [],
         ));
 
   void updateName(String name) {
@@ -17,9 +15,5 @@ class DataCubit extends Cubit<ThemeDataState> {
 
   void updateImageUrl(String imageUrl) {
     emit(state.copyWith(imageUrl: imageUrl));
-  }
-
-  void updateTypes(List<PokemonType> types) {
-    emit(state.copyWith(types: types));
   }
 }

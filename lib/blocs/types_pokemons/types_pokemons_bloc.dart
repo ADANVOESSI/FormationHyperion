@@ -9,7 +9,7 @@ class TypesPokemonsBloc extends Bloc<TypesPokemonsEvent, TypesPokemonsState> {
   TypesPokemonsBloc() : super(const TypesPokemonsState()) {
     on<LoadTypesPokemons>(_loadTypesPokemons);
     on<FilterChipSelected>(_filterTypesPokemons);
-    on<AddPokemonToDatabase>(_addPokemon);
+    on<AddPokemon>(_addPokemon);
   }
 
   Future<void> _loadTypesPokemons(LoadTypesPokemons event, Emitter<TypesPokemonsState> emit) async {
@@ -48,7 +48,7 @@ class TypesPokemonsBloc extends Bloc<TypesPokemonsEvent, TypesPokemonsState> {
   }
 
   Future<void> _addPokemon(
-    AddPokemonToDatabase event,
+    AddPokemon event,
     Emitter<TypesPokemonsState> emit,
   ) async {
     try {
@@ -57,7 +57,6 @@ class TypesPokemonsBloc extends Bloc<TypesPokemonsEvent, TypesPokemonsState> {
         imageUrl: event.imageUrl,
         types: event.types,
       );
-
       emit(state.copyWith());
     } catch (e) {}
   }

@@ -24,12 +24,12 @@ class FilterChipSelected extends TypesPokemonsEvent {
   List<Object> get props => [pokemonType, isSelected];
 }
 
-class AddPokemonToDatabase extends TypesPokemonsEvent {
+class AddPokemon extends TypesPokemonsEvent {
   final String name;
   final String imageUrl;
   final List<PokemonType> types;
 
-  const AddPokemonToDatabase({
+  const AddPokemon({
     required this.name,
     required this.imageUrl,
     required this.types,
